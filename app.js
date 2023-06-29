@@ -26,17 +26,13 @@ function checker(rows, idx) {
         key: rows[i][idx].slice(0, 9),
         value: Number(rows[i][8].slice(2).replace(",", "")),
       };
-      if (data.key in hash) {
-        hash[data.key] += data.value;
-      } else {
-        hash[data.key] = data.value;
-      }
+      if (data.key in hash) hash[data.key] += data.value;
+      else hash[data.key] = data.value;
     }
   }
   const t = [];
-  for (let i in hash) {
-    t.push([i, hash[i], "", ""]);
-  }
+  for (let i in hash) t.push([i, hash[i], "", ""]);
+
   generateExcel(t);
 }
 
