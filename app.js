@@ -1,24 +1,81 @@
-// File.
 const regexPattern = /^\d{2}-[A-Za-z]{3}-\d{2} \d{2}:\d{2}:\d{2}$/;
-
 const input = document.getElementById("input");
 const btn = document.querySelector(".btn");
 btn.addEventListener("click", () => {
   readXlsxFile(input.files[0]).then((rows) => {
-    checker(rows, 2);
+    checkerPayDirect(rows, 2);
   });
 });
 
-const input2 = document.getElementById("inputweb");
-const btn2 = document.querySelector(".btnWeb");
+const inputWeb = document.getElementById("inputweb");
+const btnWeb = document.querySelector(".btnWeb");
 
-btn2.addEventListener("click", () => {
-  readXlsxFile(input2.files[0]).then((rows) => {
-    checker(rows, 1);
+btnWeb.addEventListener("click", () => {
+  readXlsxFile(inputWeb.files[0]).then((rows) => {
+    checkerWeb(rows, 1);
   });
 });
 
-function checker(rows, idx) {
+const banks = [
+  ["ZIB", "ZBI"],
+  ["GTB", "GTI"],
+  ["ABP"],
+  ["ECO"],
+  ["FBP", "FDB"],
+  ["FBN"],
+  ["FCMB"],
+  ["HBP"],
+  ["KSB"],
+  ["SKYE"],
+  ["STANBIC", "SIB"],
+  ["SBP"],
+  ["UBN"],
+  ["UBA"],
+  ["UNITY"],
+  ["WEMA", "QPT"],
+];
+
+function checkerPayDirect(rows, idx) {
+  const hash = {};
+  for (let i = 0; i < rows.length; i++) {
+    if (regexPattern.test(rows[i][idx])) {
+      let bank = rows[i][1].split("|")[0];
+      let proceed = false;
+      for (let j = 0; j < banks.length; j++) {
+        if (banks[j].includes(bank)) {
+          bank = banks[j][0];
+          proceed = true;
+          break;
+        }
+      }
+      if (proceed) {
+        const data = {
+          date: rows[i][idx].slice(0, 9),
+          value: Number(rows[i][8].slice(2).replace(",", "")),
+          bank: bank,
+        };
+        if (!hash.hasOwnProperty(data.bank)) {
+          hash[data.bank] = {};
+        }
+        if (hash[data.bank].hasOwnProperty(data.date)) {
+          hash[data.bank][data.date].value += data.value;
+        } else {
+          hash[data.bank][data.date] = { value: data.value };
+        }
+      }
+    }
+  }
+
+  const t = [];
+  for (let i in hash) {
+    for (let x in hash[i]) {
+      t.push([x, hash[i][x].value, "", "", i]);
+    }
+  }
+  generateExcel(t);
+}
+
+function checkerWeb(rows, idx) {
   const hash = {};
   for (let i = 0; i < rows.length; i++) {
     if (regexPattern.test(rows[i][idx])) {
@@ -40,7 +97,7 @@ function generateExcel(items) {
   const workbook = XLSX.utils.book_new();
 
   const worksheetData = [
-    ["Date", "Paydirect", "Bank Statement", "Difference"],
+    ["Date", "Paydirect", "Bank Statement", "Difference", "bank"],
     ...items,
   ];
   const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
