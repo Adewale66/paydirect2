@@ -19,7 +19,7 @@ btnWeb.addEventListener("click", () => {
 const banks = [
   ["Zenith", "ZIB", "ZBI"],
   ["GTB", "GTI"],
-  ["Access", "ABP"],
+  ["Access", "ABP", "SRG"],
   ["ECO"],
   ["Fidelity", "FBP", "FDB"],
   ["FBN"],
