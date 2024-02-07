@@ -30,7 +30,7 @@ const banks = [
 	["STANBIC", "SIB"],
 	["Sterlin", "SBP"],
 	["UBN"],
-	["UBA"],
+	["UBA", "UDA", "UDV"],
 	["UNITY"],
 	["WEMA", "QPT"],
 	["JAIZ"],
